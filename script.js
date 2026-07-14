@@ -796,8 +796,8 @@ function renderConversionActions() {
   const double = actionButton("double", doubleLabel, conversionConfig.doubleDealNote || "三明治 1 份＋饮品 2 杯｜工作日可用", false);
   const visit = actionButton(
     "visit",
-    weekend ? (conversionConfig.weekendVisitLabel || "今天来福里｜菜单与导航") : (conversionConfig.weekdayVisitLabel || "菜单与导航"),
-    "查看七款三明治与到店方式",
+    weekend ? (conversionConfig.weekendVisitLabel || "来福里看看") : (conversionConfig.weekdayVisitLabel || "来福里看看"),
+    `高德地图搜索「${navigationSearchText}」`,
     weekend
   );
   conversionActions.innerHTML = weekend ? visit : `${single}${double}${visit}`;
@@ -881,24 +881,13 @@ function openDeal(type) {
 
 function openVisitOptions() {
   trackEvent("visit_options_open", { source: "result_visit" });
-  const hasStore = Boolean(externalLinks.storeUrl);
   const hasNavigation = Boolean(externalLinks.navigationUrl);
-  if (!hasStore && !hasNavigation) {
-    openExternalSheet({
-      title: "来福里看看",
-      copy: `打开高德地图，搜索「${navigationSearchText}」即可导航。`,
-      actions: [{ id: "copy-navigation", label: "复制导航搜索词" }]
-    });
-    return;
-  }
-  const actions = [];
-  if (hasStore) actions.push({ id: "store", label: "打开大众点评店铺" });
-  if (hasNavigation) actions.push({ id: "navigation", label: "导航去福里" });
-  if (!hasNavigation) actions.push({ id: "copy-navigation", label: "复制高德搜索词" });
   openExternalSheet({
     title: "来福里看看",
-    copy: hasStore ? `先看大众点评店铺；到店时打开高德地图，搜索「${navigationSearchText}」即可导航。` : `打开高德地图，搜索「${navigationSearchText}」即可导航。`,
-    actions
+    copy: `到店地址请打开高德地图，搜索「${navigationSearchText}」。`,
+    actions: hasNavigation
+      ? [{ id: "navigation", label: "高德地图导航" }]
+      : [{ id: "copy-navigation", label: "复制高德搜索词" }]
   });
 }
 
