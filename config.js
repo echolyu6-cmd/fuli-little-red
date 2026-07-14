@@ -1,10 +1,10 @@
 window.FULI_CONFIG = {
   externalLinks: {
-    singleDealUrl: "",
+    singleDealUrl: "https://v.douyin.com/Rm85eW9aGMg/",
     doubleDealUrl: "",
     singleDealIsMerchantPage: false,
     doubleDealIsMerchantPage: false,
-    storeUrl: "",
+    storeUrl: "http://dpurl.cn/Pc8zktiz",
     navigationUrl: "",
     dealStoreSearchText: "福里农舍",
     navigationSearchText: "德清福里农舍",

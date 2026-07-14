@@ -886,9 +886,14 @@ function openVisitOptions() {
     return;
   }
   const actions = [];
-  if (hasStore) actions.push({ id: "store", label: "查看今日菜单" });
+  if (hasStore) actions.push({ id: "store", label: "打开大众点评店铺" });
   if (hasNavigation) actions.push({ id: "navigation", label: "导航去福里" });
-  openExternalSheet({ title: "来福里看看", copy: "菜单、营业信息与导航都在这里。", actions });
+  if (!hasNavigation) actions.push({ id: "copy-navigation", label: "复制高德搜索词" });
+  openExternalSheet({
+    title: "来福里看看",
+    copy: hasStore ? `先看大众点评店铺；到店时打开高德地图，搜索「${navigationSearchText}」即可导航。` : `打开高德地图，搜索「${navigationSearchText}」即可导航。`,
+    actions
+  });
 }
 
 function handleConversionAction(action) {
