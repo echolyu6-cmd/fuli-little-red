@@ -160,9 +160,12 @@ p { font-size: 16px; line-height: 1.58; }
 .crumb-2 { left: 55%; top: 50%; }
 .crumb-3 { left: 44%; top: 54%; }
 .cut-button { width: min(78vw, 280px); margin: 12px auto 0; }
-.opening-stage.is-cutting .knife { animation: knife-cut 1250ms ease-in-out both; }
-.opening-stage.is-cutting .bread-whole { animation: bread-shake 760ms ease-out both; }
-.opening-stage.is-cutting .crumb { animation: crumb-pop 720ms ease-out 520ms both; }
+.opening-copy { width: min(82vw, 320px); margin: -5px auto 4px; color: var(--muted); font-size: 14px; line-height: 1.45; }
+.opening-loading { min-height: 18px; margin: 0; color: var(--muted); font-size: 12px; line-height: 1.3; }
+.opening-loading[hidden] { display: none; }
+.opening-stage.is-cutting .knife { animation: knife-cut 760ms ease-in-out both; }
+.opening-stage.is-cutting .bread-whole { animation: bread-shake 480ms ease-out both; }
+.opening-stage.is-cutting .crumb { animation: crumb-pop 480ms ease-out 300ms both; }
 .opening-stage.is-opened .bread-whole { opacity: 0; }
 .opening-stage.is-opened .bread-opened { opacity: 1; transform: translate(-50%, -48%) scale(1); }
 
@@ -1199,6 +1202,46 @@ p { font-size: 16px; line-height: 1.58; }
 }
 .fly-piece {
   background: rgba(255,249,237,0.08);
+}
+
+/* Commercial conversion layer: keeps the food-play surface intact and makes next steps explicit. */
+.conversion-actions {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 8px;
+  width: min(100%, 330px);
+  margin: 0 auto;
+}
+.conversion-button {
+  width: 100%;
+  min-height: 58px;
+  display: grid;
+  gap: 3px;
+  padding: 11px 14px;
+  border: 1px solid rgba(255,249,237,0.58);
+  border-radius: 7px;
+  background: rgba(255,249,237,0.12);
+  color: #fff9ed;
+  cursor: pointer;
+  text-align: left;
+}
+.conversion-button.is-primary {
+  border-color: transparent;
+  background: #f3dfbd;
+  color: #3f3226;
+}
+.conversion-button strong { font-size: 16px; line-height: 1.25; }
+.conversion-button small { opacity: 0.8; font-size: 12px; line-height: 1.25; }
+.result-secondary-actions { margin-top: 2px; }
+.result-secondary-actions .primary-button { background: rgba(255,249,237,0.94); color: #3f3226; }
+.result-secondary-actions .text-button { color: rgba(255,249,237,0.82); font-size: 15px; }
+.external-sheet-actions { display: grid; gap: 8px; }
+.sheet-dark-button { color: var(--muted); }
+@media (max-width: 374px), (max-height: 720px) {
+  .opening-copy { font-size: 13px; }
+  .conversion-button { min-height: 54px; padding: 9px 12px; }
+  .conversion-button strong { font-size: 15px; }
 }
 @media (max-width: 374px), (max-height: 720px) {
   .production-plate { padding-bottom: 91px; }

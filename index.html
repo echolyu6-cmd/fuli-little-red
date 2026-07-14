@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="随手选 5 种食材，看看福里七款三明治里，哪款最适合今天的你。" />
     <title>福里小作品 01｜小红帽福气三明治实验室</title>
     <link rel="preload" as="image" href="assets/ingredients-red/thumbs/focaccia-toasted.png" />
     <link rel="preload" as="image" href="assets/opening/bar-counter-small.webp" />
@@ -26,15 +27,17 @@
         <section class="opening-stage" id="openingStage">
           <p class="eyebrow">FULI SANDWICH LAB</p>
           <h1>先切开一块佛卡夏</h1>
+          <p class="opening-copy">随手选 5 种食材，看看福里七款三明治里，哪款最适合今天的你。</p>
+          <p class="opening-loading" id="openingLoading" role="status">正在铺开吧台…</p>
           <button class="bread-button" type="button" data-cut-bread aria-label="切开佛卡夏，开始搭一份福气三明治">
-            <img class="bread-whole" src="assets/ingredients-red/thumbs/focaccia-toasted.png" alt="佛卡夏面包" />
-            <img class="bread-opened" src="assets/ingredients-red/thumbs/focaccia-open.png" alt="切开后摊开的佛卡夏面包" />
+            <img class="bread-whole" src="assets/ingredients-red/thumbs/focaccia-toasted.png" alt="佛卡夏面包" onerror="this.onerror=null; this.src='assets/opening/focaccia-hero.webp';" />
+            <img class="bread-opened" src="assets/ingredients-red/thumbs/focaccia-open.png" alt="切开后摊开的佛卡夏面包" onerror="this.onerror=null; this.src='assets/ingredients/thumbs/focaccia.webp';" />
             <span class="knife" aria-hidden="true"><i></i></span>
             <span class="crumb crumb-1"></span>
             <span class="crumb crumb-2"></span>
             <span class="crumb crumb-3"></span>
           </button>
-          <button class="primary-button cut-button" type="button" data-cut-bread>切开面包，开始搭</button>
+          <button class="primary-button cut-button" type="button" data-cut-bread>30 秒搭一份</button>
         </section>
 
         <section class="assembly" id="assembly" hidden>
@@ -46,7 +49,7 @@
 
           <section class="reference-panel" aria-label="官方小红帽系列参考卡">
             <div class="section-title">
-              <p>福里有哪些小红帽</p>
+              <p>先看看福里的 7 款三明治</p>
               <span>轻轻参考</span>
             </div>
             <div class="reference-rail" id="referenceGrid"></div>
@@ -87,7 +90,7 @@
         <div class="result-wash"></div>
         <article class="result-card paper-card" id="resultCard">
           <p class="receipt-brand">FULI LUCKY SANDWICH</p>
-          <h1>你的福气三明治完成了</h1>
+          <h1>今天最像哪款</h1>
           <div class="result-visual" id="resultVisual"></div>
           <p class="result-kicker">你随手搭出了一份今日口味。</p>
           <h2 id="resultName">你这份最像：小红帽</h2>
@@ -95,11 +98,11 @@
           <div class="dash"></div>
           <p class="offline-note" id="offlineNote"></p>
         </article>
-        <div class="receipt-actions result-actions">
+        <div class="conversion-actions" id="conversionActions" aria-label="到店与团购入口"></div>
+        <div class="receipt-actions result-actions result-secondary-actions">
           <button class="primary-button light" type="button" data-save-ticket>保存结果卡</button>
           <button class="text-button" type="button" data-reset>再搭一次</button>
-          <button class="text-button" type="button" data-see-menu>看看福里真实菜单</button>
-          <button class="text-button order-button" type="button" data-order>去微信搜小程序</button>
+          <button class="text-button" type="button" data-see-menu>看全部七款</button>
         </div>
         <p class="toast" id="toast"></p>
       </section>
@@ -111,7 +114,7 @@
           <p class="sheet-note">真实供应请以福里当日菜单为准。</p>
           <div class="live-menu-grid" id="liveMenuGrid"></div>
           <div class="menu-order-guide">
-            <p>打开微信，搜索「Fulleee福里农舍」就可以看今日菜单。</p>
+            <p>打开微信，搜索「<span data-mini-program-inline>Fulleee福里农舍</span>」就可以看今日菜单。</p>
             <button class="primary-button light" type="button" data-open-mini>复制小程序名</button>
             <button class="text-button" type="button" data-menu-back-result>回到结果</button>
           </div>
@@ -129,6 +132,16 @@
           <button class="text-button" type="button" data-close-mini>我知道了</button>
         </article>
       </section>
+      <section class="mini-sheet" id="externalSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="externalSheetTitle">
+        <button class="sheet-backdrop" type="button" data-close-external aria-label="关闭提示"></button>
+        <article class="sheet-panel mini-panel paper-card">
+          <p class="receipt-brand" id="externalSheetBrand">FULI VISIT</p>
+          <h2 id="externalSheetTitle">来福里看看</h2>
+          <p class="mini-program-copy" id="externalSheetCopy"></p>
+          <div class="external-sheet-actions" id="externalSheetActions"></div>
+          <button class="text-button sheet-dark-button" type="button" data-close-external>我知道了</button>
+        </article>
+      </section>
       <section class="ticket-sheet" id="ticketSheet" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="ticketSheetTitle">
         <button class="sheet-backdrop" type="button" data-close-ticket aria-label="关闭小票"></button>
         <article class="sheet-panel ticket-panel paper-card">
@@ -140,6 +153,7 @@
       </section>
     </main>
 
+    <script src="config.js"></script>
     <script src="assets/data/sandwiches.js"></script>
     <script src="script.js"></script>
   </body>

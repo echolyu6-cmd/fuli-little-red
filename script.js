@@ -23,10 +23,33 @@ const menuSheet = document.querySelector("#menuSheet");
 const ticketSheet = document.querySelector("#ticketSheet");
 const ticketPreview = document.querySelector("#ticketPreview");
 const miniSheet = document.querySelector("#miniSheet");
-const miniProgramName = "Fulleee福里农舍";
-
-const orderMiniProgramUrl = "";
+const externalSheet = document.querySelector("#externalSheet");
+const externalSheetTitle = document.querySelector("#externalSheetTitle");
+const externalSheetCopy = document.querySelector("#externalSheetCopy");
+const externalSheetActions = document.querySelector("#externalSheetActions");
+const conversionActions = document.querySelector("#conversionActions");
+const appConfig = window.FULI_CONFIG || { externalLinks: {}, conversion: {}, analytics: {} };
+const externalLinks = appConfig.externalLinks || {};
+const conversionConfig = appConfig.conversion || {};
+const analyticsConfig = appConfig.analytics || {};
+const miniProgramName = externalLinks.miniProgramName || "Fulleee福里农舍";
+const dealStoreSearchText = externalLinks.dealStoreSearchText || "福里农舍";
+const navigationSearchText = externalLinks.navigationSearchText || "德清福里农舍";
 const MAX_CHOICES = 5;
+const openingBread = document.querySelector(".bread-whole");
+const openingLoading = document.querySelector("#openingLoading");
+
+function resolveOpeningLoad() {
+  if (openingLoading) openingLoading.hidden = true;
+}
+
+if (openingBread) {
+  if (openingBread.complete && openingBread.naturalWidth) resolveOpeningLoad();
+  else {
+    openingBread.addEventListener("load", resolveOpeningLoad, { once: true });
+    openingBread.addEventListener("error", resolveOpeningLoad, { once: true });
+  }
+}
 
 const ingredientPool = [
   { id: "braised-beef", name: "低温水煮牛腩", image: "assets/ingredients-red/thumbs/braised-beef.png", fallback: "assets/ingredients-clean/meat/slow-cooked-beef.png", tags: ["beef", "meat", "protein"], note: "牛腩一放，内容就认真了。" },
@@ -160,6 +183,7 @@ function getIngredientWeight(profile, ingredient) {
 }
 let selectedIngredients = [];
 let ingredientCounts = {};
+let pendingIngredientCount = 0;
 let lastResultScores = [];
 let lastHiddenResult = false;
 let hasRenderedAssembly = false;
@@ -252,6 +276,66 @@ function getLayerMotion(step, layerIndex) {
 function showScreen(name) {
   screens.forEach((screen) => screen.classList.toggle("is-active", screen.dataset.screen === name));
   window.scrollTo({ top: 0, behavior: "auto" });
+}
+
+function trackEvent(name, details = {}) {
+  const payload = { ...details, page: "little_red_sandwich" };
+  if (analyticsConfig.debug) console.info("[FULI track]", name, payload);
+  if (window.umami && typeof window.umami.track === "function") window.umami.track(name, payload);
+  if (window.gtag && analyticsConfig.ga4MeasurementId) window.gtag("event", name, payload);
+  if (typeof window.fuliTrackEvent === "function") window.fuliTrackEvent(name, payload);
+}
+
+function initAnalytics() {
+  if (analyticsConfig.umamiWebsiteId && analyticsConfig.umamiScriptUrl && !document.querySelector("script[data-website-id]")) {
+    const script = document.createElement("script");
+    script.defer = true;
+    script.src = analyticsConfig.umamiScriptUrl;
+    script.dataset.websiteId = analyticsConfig.umamiWebsiteId;
+    document.head.appendChild(script);
+  }
+  if (analyticsConfig.ga4MeasurementId && !window.dataLayer) {
+    const script = document.createElement("script");
+    script.async = true;
+    script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(analyticsConfig.ga4MeasurementId)}`;
+    document.head.appendChild(script);
+    window.dataLayer = window.dataLayer || [];
+    window.gtag = function gtag() { window.dataLayer.push(arguments); };
+    window.gtag("js", new Date());
+    window.gtag("config", analyticsConfig.ga4MeasurementId, { anonymize_ip: true });
+  }
+}
+
+function withUtm(url, content) {
+  if (!url) return "";
+  try {
+    const target = new URL(url, window.location.href);
+    target.searchParams.set("utm_source", analyticsConfig.utmSource || "fuli_little_red");
+    target.searchParams.set("utm_medium", analyticsConfig.utmMedium || "game");
+    target.searchParams.set("utm_campaign", analyticsConfig.utmCampaign || "sandwich_conversion");
+    target.searchParams.set("utm_content", content);
+    return target.href;
+  } catch (error) {
+    return "";
+  }
+}
+
+function openExternalUrl(url, content) {
+  const targetUrl = withUtm(url, content);
+  if (!targetUrl) return false;
+  const link = document.createElement("a");
+  link.href = targetUrl;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  return true;
+}
+
+function isWeekend() {
+  const day = new Date().getDay();
+  return day === 0 || day === 6;
 }
 
 function getAudioContext() {
@@ -350,6 +434,7 @@ function showToast(message) {
 function startCut() {
   if (cutStarted) return;
   cutStarted = true;
+  trackEvent("game_start");
   getAudioContext();
   playSound("cut");
   if (navigator.vibrate) navigator.vibrate(16);
@@ -357,7 +442,7 @@ function startCut() {
   window.setTimeout(() => {
     openingStage.classList.add("is-opened");
     revealAssembly();
-  }, 1450);
+  }, 900);
 }
 
 function revealAssembly() {
@@ -381,7 +466,7 @@ function renderReferenceCards() {
     const card = document.createElement("article");
     card.className = "reference-card";
     card.innerHTML = `
-      <img src="${sandwich.thumb}" alt="${sandwich.name}" loading="lazy" onerror="this.onerror=null; this.src='${sandwich.image}';" />
+      <img src="${sandwich.thumb}" alt="${sandwich.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${sandwich.image}';" />
       <strong>${sandwich.name}</strong>
       <span>${sandwich.core.slice(0, 3).join(" / ")}</span>
       <em>${sandwich.label}</em>
@@ -439,7 +524,7 @@ function renderIngredientOrbit() {
     button.className = `process-ingredient pos-${index}`;
     button.style.setProperty("--tilt", `${randomBetween(-4, 4).toFixed(2)}deg`);
     button.dataset.id = step.id;
-    button.innerHTML = `<img src="${step.image}" alt="${step.name}" loading="eager" onerror="this.onerror=null; this.src='${step.fallback}';" /><span>${step.name}</span>`;
+    button.innerHTML = `<img src="${step.image}" alt="${step.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${step.fallback}';" /><span>${step.name}</span>`;
     button.addEventListener("click", () => addIngredient(button, step));
     ingredientOrbit.appendChild(button);
   });
@@ -447,10 +532,11 @@ function renderIngredientOrbit() {
 
 function addIngredient(button, step) {
   if (closingStarted) return;
-  if (selectedIngredients.length >= MAX_CHOICES) {
+  if (selectedIngredients.length + pendingIngredientCount >= MAX_CHOICES) {
     showToast("已经够香了，盖上面包看看结果。");
     return;
   }
+  pendingIngredientCount += 1;
   const nextRepeatCount = (ingredientCounts[step.id] || 0) + 1;
   const repeatMessage = getRepeatMessage(step, nextRepeatCount);
   getAudioContext();
@@ -461,7 +547,7 @@ function addIngredient(button, step) {
     showFlavorFloat(repeatMessage);
     if (navigator.vibrate) navigator.vibrate(10);
   }
-  const nextIndex = selectedIngredients.length + 1;
+  const nextIndex = selectedIngredients.length + pendingIngredientCount;
   const motion = getLayerMotion(step, nextIndex);
   if (nextRepeatCount > 1) {
     const boost = Math.min(0.18, (nextRepeatCount - 1) * 0.055);
@@ -472,6 +558,7 @@ function addIngredient(button, step) {
     motion.startRotate += randomBetween(-6, 6);
   }
   flyToPlate(button, step, motion, () => {
+    pendingIngredientCount = Math.max(0, pendingIngredientCount - 1);
     selectedIngredients.push(step);
     ingredientCounts[step.id] = nextRepeatCount;
     button.classList.remove("is-taking");
@@ -482,6 +569,7 @@ function addIngredient(button, step) {
     addProcessLayer(step, selectedIngredients.length, motion);
     updateMakingCopy(step, repeatMessage);
     bouncePlate();
+    trackEvent("ingredient_selected", { ingredient_id: step.id, selected_count: selectedIngredients.length, repeat_count: nextRepeatCount });
     playSound(step.id === "parmesan" ? "ding" : "drop");
   });
 }
@@ -498,6 +586,7 @@ function updateMakingCopy(step, customHint) {
   assemblyHint.textContent = `${lead} 盖上面包，看看结果。`;
   plateHint.textContent = customHint || "这一份内容够了，盖上面包吧。";
   closeButton.hidden = false;
+  trackEvent("game_complete", { ingredient_count: count, unique_ingredient_count: new Set(selectedIngredients.map((item) => item.id)).size });
 }
 
 function pulse(button) {
@@ -611,6 +700,7 @@ function closeSandwich() {
 function resetMaking(scrollToApp = true) {
   selectedIngredients = [];
   ingredientCounts = {};
+  pendingIngredientCount = 0;
   closingStarted = false;
   processLayers.innerHTML = "";
   productionStage.className = "open-sandwich";
@@ -687,15 +777,33 @@ function renderResult() {
     matchLine.textContent = top.copy;
   }
   renderScoreList(scores, hidden);
-  offlineNote.innerHTML = "想吃真实小红帽？<br />来福里看看今日菜单。<br />真实供应请以福里当日菜单为准。";
+  offlineNote.innerHTML = "今天最像哪款，已经揭晓。<br />真实供应请以福里当日菜单为准。";
+  renderConversionActions();
+  trackEvent("result_view", { result_id: hidden ? "fuli_platter" : top.id, result_name: hidden ? "福气满满拼盘" : top.name, top_percent: top.percent });
   playSound("paper");
   showScreen("result");
 }
 
-function openMenuSheet() {
+function actionButton(action, label, note, primary = false) {
+  return `<button class="conversion-button ${primary ? "is-primary" : ""}" type="button" data-conversion-action="${action}"><strong>${label}</strong>${note ? `<small>${note}</small>` : ""}</button>`;
+}
+
+function renderConversionActions() {
+  const weekend = isWeekend();
+  const singleLabel = externalLinks.singleDealIsMerchantPage ? "打开抖音查看团购" : (conversionConfig.singleDealLabel || "工作日单人餐｜狼外婆＋美式 ¥67");
+  const doubleLabel = externalLinks.doubleDealIsMerchantPage ? "打开抖音查看团购" : (conversionConfig.doubleDealLabel || "工作日双人下午｜三明治＋2杯饮品 ¥110");
+  const single = actionButton("single", singleLabel, conversionConfig.singleDealNote || "周一至周五可核销", !weekend);
+  const double = actionButton("double", doubleLabel, conversionConfig.doubleDealNote || "7款三明治任选1款，饮品任选2杯", false);
+  const visit = actionButton("visit", weekend ? (conversionConfig.weekendVisitLabel || "今天来福里｜查看菜单与导航") : (conversionConfig.weekdayVisitLabel || "周末来福里｜查看菜单与导航"), weekend ? "今天可先看菜单与导航" : "周末与非团购时间可先看菜单", weekend);
+  const weekendDeal = actionButton("single", conversionConfig.weekendDealLabel || "先囤工作日套餐", "仅周一至周五核销", false);
+  conversionActions.innerHTML = weekend ? `${visit}${weekendDeal}${double}` : `${single}${double}${visit}`;
+}
+
+function openMenuSheet(source = "result") {
   renderMenuCards();
   menuSheet.classList.add("is-open");
   menuSheet.setAttribute("aria-hidden", "false");
+  trackEvent("menu_click", { source });
 }
 
 function closeMenuSheet() {
@@ -715,6 +823,9 @@ function closeTicketSheet() {
 }
 
 function openMiniSheet() {
+  document.querySelectorAll(".mini-program-name, [data-mini-program-inline]").forEach((element) => {
+    element.textContent = miniProgramName;
+  });
   miniSheet.classList.add("is-open");
   miniSheet.setAttribute("aria-hidden", "false");
 }
@@ -731,6 +842,91 @@ async function copyMiniProgramName() {
     showToast(`已复制：${miniProgramName}`);
   } catch (error) {
     showToast(`可以手动复制：${miniProgramName}`);
+  }
+}
+
+function openExternalSheet({ title, copy, actions = [], brand = "FULI VISIT" }) {
+  document.querySelector("#externalSheetBrand").textContent = brand;
+  externalSheetTitle.textContent = title;
+  externalSheetCopy.textContent = copy;
+  externalSheetActions.innerHTML = actions.map((action) => `<button class="primary-button light" type="button" data-external-action="${action.id}">${action.label}</button>`).join("");
+  externalSheet.classList.add("is-open");
+  externalSheet.setAttribute("aria-hidden", "false");
+}
+
+function closeExternalSheet() {
+  externalSheet.classList.remove("is-open");
+  externalSheet.setAttribute("aria-hidden", "true");
+}
+
+function openDeal(type) {
+  const isSingle = type === "single";
+  const eventName = isSingle ? "single_deal_click" : "double_deal_click";
+  const url = isSingle ? externalLinks.singleDealUrl : externalLinks.doubleDealUrl;
+  trackEvent(eventName, { link_configured: Boolean(url), day_type: isWeekend() ? "weekend" : "weekday" });
+  if (openExternalUrl(url, isSingle ? "single_deal" : "double_deal")) return;
+  openExternalSheet({
+    title: conversionConfig.dealFallbackTitle || "工作日团购",
+    copy: conversionConfig.dealFallbackCopy || "打开抖音搜索「福里农舍」，可以查看当前团购。",
+    actions: [{ id: "copy-deal-store", label: "复制店铺名" }],
+    brand: "FULI WEEKDAY DEAL"
+  });
+}
+
+function openVisitOptions() {
+  trackEvent("navigation_click", { source: "result_visit" });
+  const hasStore = Boolean(externalLinks.storeUrl);
+  const hasNavigation = Boolean(externalLinks.navigationUrl);
+  if (!hasStore && !hasNavigation) {
+    openExternalSheet({
+      title: "来福里看看",
+      copy: `打开高德地图，搜索「${navigationSearchText}」即可导航。`,
+      actions: [{ id: "copy-navigation", label: "复制导航搜索词" }]
+    });
+    return;
+  }
+  const actions = [];
+  if (hasStore) actions.push({ id: "store", label: "查看今日菜单" });
+  if (hasNavigation) actions.push({ id: "navigation", label: "导航去福里" });
+  openExternalSheet({ title: "来福里看看", copy: "菜单、营业信息与导航都在这里。", actions });
+}
+
+function handleConversionAction(action) {
+  if (action === "single" || action === "double") openDeal(action);
+  if (action === "visit") openVisitOptions();
+}
+
+function handleExternalAction(action) {
+  if (action === "copy-deal-store") {
+    copyText(dealStoreSearchText, `已复制：${dealStoreSearchText}`, `可以手动复制：${dealStoreSearchText}`);
+    return;
+  }
+  if (action === "copy-navigation") {
+    copyText(navigationSearchText, `已复制：${navigationSearchText}`, `可以手动复制：${navigationSearchText}`);
+    return;
+  }
+  if (action === "copy-mini") {
+    copyMiniProgramName();
+    return;
+  }
+  if (action === "store") {
+    trackEvent("menu_click", { source: "visit_sheet", link_configured: Boolean(externalLinks.storeUrl) });
+    openExternalUrl(externalLinks.storeUrl, "store_menu");
+    return;
+  }
+  if (action === "navigation") {
+    trackEvent("navigation_click", { source: "visit_sheet", link_configured: Boolean(externalLinks.navigationUrl) });
+    openExternalUrl(externalLinks.navigationUrl, "navigation");
+  }
+}
+
+async function copyText(text, successMessage, fallbackMessage) {
+  try {
+    if (!navigator.clipboard || !navigator.clipboard.writeText) throw new Error("clipboard unavailable");
+    await navigator.clipboard.writeText(text);
+    showToast(successMessage);
+  } catch (error) {
+    showToast(fallbackMessage);
   }
 }
 
@@ -795,7 +991,7 @@ async function saveResultTicket() {
     context.fillStyle = "#b83228";
     context.font = "700 28px Arial, sans-serif";
     context.textAlign = "center";
-    context.fillText("FULI LUCKY SANDWICH", width / 2, 112);
+    context.fillText("德清｜福里农舍", width / 2, 112);
     context.fillStyle = "#2f281f";
     context.font = "700 48px serif";
     context.fillText("我的福气结果卡", width / 2, 178);
@@ -842,15 +1038,19 @@ async function saveResultTicket() {
       y += 76;
     });
     context.fillStyle = "#fff6e7";
-    roundedRect(context, 118, 1110, width - 236, 116, 18);
+    roundedRect(context, 118, 1072, width - 236, 156, 18);
     context.fill();
     context.fillStyle = "#b83228";
     context.font = "700 28px Arial, sans-serif";
     context.textAlign = "center";
-    context.fillText("想吃真实小红帽？", width / 2, 1154);
+    context.fillText("你也来搭一份，看看是哪顶小红帽", width / 2, 1116);
     context.fillStyle = "#3f3226";
-    context.font = "26px serif";
-    context.fillText("打开微信搜索：Fulleee福里农舍", width / 2, 1196);
+    context.font = "24px serif";
+    context.fillText("工作日三明治套餐已上线", width / 2, 1160);
+    context.font = "20px serif";
+    context.fillText("福里七款三明治，今天你像哪一款？", width / 2, 1198);
+    context.font = "18px Arial, sans-serif";
+    context.fillText(externalLinks.gamePublicUrl || window.location.href, width / 2, 1222);
     const dataUrl = canvas.toDataURL("image/png");
     const link = document.createElement("a");
     link.href = dataUrl;
@@ -864,6 +1064,7 @@ async function saveResultTicket() {
       openTicketSheet(dataUrl);
     }
     if (/MicroMessenger|Mobile/i.test(navigator.userAgent)) openTicketSheet(dataUrl);
+    trackEvent("result_save", { result_id: lastHiddenResult ? "fuli_platter" : (lastResultScores[0] || {}).id || "unknown" });
   } catch (error) {
     showToast("生成结果卡失败，请稍后再试。");
   }
@@ -879,8 +1080,11 @@ function showMenu() {
 document.querySelectorAll("[data-cut-bread]").forEach((button) => button.addEventListener("click", startCut));
 closeButton.addEventListener("click", closeSandwich);
 soundToggle.addEventListener("click", () => setSoundEnabled(!soundEnabled));
-document.querySelectorAll("[data-reset]").forEach((button) => button.addEventListener("click", () => resetMaking(true)));
-document.querySelector("[data-see-menu]").addEventListener("click", openMenuSheet);
+document.querySelectorAll("[data-reset]").forEach((button) => button.addEventListener("click", () => {
+  trackEvent("restart_click");
+  resetMaking(true);
+}));
+document.querySelector("[data-see-menu]").addEventListener("click", () => openMenuSheet("result_secondary"));
 document.querySelectorAll("[data-close-menu]").forEach((button) => button.addEventListener("click", closeMenuSheet));
 document.querySelectorAll("[data-close-ticket]").forEach((button) => button.addEventListener("click", closeTicketSheet));
 document.querySelectorAll("[data-open-mini]").forEach((button) => button.addEventListener("click", openMiniSheet));
@@ -888,6 +1092,16 @@ document.querySelectorAll("[data-close-mini]").forEach((button) => button.addEve
 document.querySelector("[data-mini-copy]").addEventListener("click", copyMiniProgramName);
 document.querySelector("[data-menu-back-result]").addEventListener("click", closeMenuSheet);
 document.querySelector("[data-save-ticket]").addEventListener("click", saveResultTicket);
-document.querySelector("[data-order]").addEventListener("click", showMiniProgramPrompt);
+conversionActions.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-conversion-action]");
+  if (button) handleConversionAction(button.dataset.conversionAction);
+});
+document.querySelectorAll("[data-close-external]").forEach((button) => button.addEventListener("click", closeExternalSheet));
+externalSheetActions.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-external-action]");
+  if (button) handleExternalAction(button.dataset.externalAction);
+});
 
+initAnalytics();
+trackEvent("page_view");
 showScreen("app");
