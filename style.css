@@ -1122,3 +1122,81 @@ p { font-size: 16px; line-height: 1.58; }
 .live-menu-item {
   align-content: start;
 }
+/* Expanded Little Red ingredient sticker tray. */
+.production-plate {
+  padding-bottom: 104px;
+}
+.ingredient-orbit {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: auto;
+  bottom: 7px;
+  z-index: 16;
+  display: flex;
+  gap: 8px;
+  height: 96px;
+  padding: 7px 8px 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  pointer-events: auto;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+  border: 1px solid rgba(143,114,80,0.18);
+  border-radius: 14px;
+  background: rgba(255,249,237,0.62);
+  box-shadow: 0 10px 18px rgba(47,40,31,0.09);
+}
+.ingredient-orbit::-webkit-scrollbar { display: none; }
+.process-ingredient,
+.pos-0,
+.pos-1,
+.pos-2,
+.pos-3,
+.pos-4,
+.pos-5,
+.pos-6 {
+  position: relative;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  flex: 0 0 76px;
+  width: 76px;
+  min-height: 72px;
+  scroll-snap-align: center;
+  transform: rotate(var(--tilt, 0deg));
+}
+.process-ingredient img {
+  height: 48px;
+  margin: -4px auto 1px;
+}
+.process-ingredient span {
+  font-size: 10px;
+  line-height: 1.08;
+}
+.plate-hint {
+  bottom: 113px;
+  max-width: 250px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(255,249,237,0.66);
+}
+.fly-piece {
+  background: rgba(255,249,237,0.08);
+}
+@media (max-width: 374px), (max-height: 720px) {
+  .production-plate { padding-bottom: 91px; }
+  .ingredient-orbit { height: 84px; gap: 7px; padding: 6px 7px 9px; }
+  .process-ingredient,
+  .pos-0,
+  .pos-1,
+  .pos-2,
+  .pos-3,
+  .pos-4,
+  .pos-5,
+  .pos-6 { flex-basis: 68px; width: 68px; min-height: 64px; }
+  .process-ingredient img { height: 40px; }
+  .process-ingredient span { font-size: 9px; }
+  .plate-hint { bottom: 99px; font-size: 12px; }
+}

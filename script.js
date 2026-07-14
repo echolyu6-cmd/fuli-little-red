@@ -29,15 +29,28 @@ const orderMiniProgramUrl = "";
 const MAX_CHOICES = 5;
 
 const ingredientPool = [
-  { id: "stracciatella", name: "斯塔塞特拉奶酪", image: "assets/ingredients-clean/cheese/stracciatella.png", fallback: "assets/ingredients/thumbs/stracciatella.webp", tags: ["cheese", "soft", "creamy"], note: "奶酪先把香气托住。" },
-  { id: "pesto", name: "青酱", image: "assets/ingredients-clean/sauce/pesto.png", fallback: "assets/ingredients/thumbs/pesto.webp", tags: ["pesto", "sauce", "green"], note: "青酱这一层很加分。" },
-  { id: "pepper", name: "甜椒", image: "assets/ingredients-clean/vegetables/sweet-pepper.png", fallback: "assets/ingredients/thumbs/pepper.webp", tags: ["pepper", "vegetable", "sweet"], note: "甜椒让这一口亮起来。" },
-  { id: "beef", name: "低温慢煮牛肉", image: "assets/ingredients-clean/meat/slow-cooked-beef.png", fallback: "assets/ingredients/thumbs/beef.webp", tags: ["beef", "meat", "protein"], note: "牛肉一放，内容就认真了。" },
-  { id: "arugula", name: "芝麻菜", image: "assets/ingredients-clean/vegetables/arugula.png", fallback: "assets/ingredients/thumbs/arugula.webp", tags: ["arugula", "vegetable", "fresh"], note: "芝麻菜把香气提起来。" },
-  { id: "parmesan", name: "帕马森芝士碎", image: "assets/ingredients-clean/cheese/parmesan.png", fallback: "assets/ingredients/thumbs/parmesan.webp", tags: ["parmesan", "cheese", "salty"], note: "芝士碎落下来了。" },
-  { id: "balsamic", name: "摩德纳黑醋", image: "assets/ingredients-clean/sauce/balsamic.png", fallback: "assets/ingredients/thumbs/balsamic.webp", tags: ["balsamic", "sauce", "acid"], note: "黑醋把这一口收完整。" },
+  { id: "braised-beef", name: "低温水煮牛腩", image: "assets/ingredients-red/thumbs/braised-beef.png", fallback: "assets/ingredients-clean/meat/slow-cooked-beef.png", tags: ["beef", "meat", "protein"], note: "牛腩一放，内容就认真了。" },
+  { id: "mortadella", name: "莫特苔拉香肠", image: "assets/ingredients-red/thumbs/mortadella.png", fallback: "assets/ingredients-red/thumbs/braised-beef.png", tags: ["meat", "savory"], note: "香肠把这一口变得热闹。" },
+  { id: "south-african-pepper", name: "南非甜辣椒", image: "assets/ingredients-red/thumbs/south-african-pepper.png", fallback: "assets/ingredients-clean/vegetables/sweet-pepper.png", tags: ["pepper", "vegetable", "sweet"], note: "甜辣椒让颜色亮起来。" },
+  { id: "strawberry-tomato", name: "草莓番茄", image: "assets/ingredients-red/thumbs/strawberry-tomato.png", fallback: "assets/ingredients-red/thumbs/south-african-pepper.png", tags: ["tomato", "vegetable", "fresh"], note: "番茄把清爽感带进来了。" },
+  { id: "arugula-real", name: "芝麻菜", image: "assets/ingredients-red/thumbs/arugula-real.png", fallback: "assets/ingredients-clean/vegetables/arugula.png", tags: ["arugula", "vegetable", "fresh"], note: "芝麻菜把香气提起来。" },
+  { id: "kale", name: "羽衣甘蓝", image: "assets/ingredients-red/thumbs/kale.png", fallback: "assets/ingredients-red/thumbs/arugula-real.png", tags: ["greens", "vegetable", "fresh"], note: "羽衣甘蓝让这一层更绿。" },
+  { id: "pickled-onion", name: "腌制洋葱", image: "assets/ingredients-red/thumbs/pickled-onion.png", fallback: "assets/ingredients-red/thumbs/pickle.png", tags: ["pickle", "acid", "vegetable"], note: "洋葱给味道加了一点转弯。" },
+  { id: "pickle", name: "酸黄瓜", image: "assets/ingredients-red/thumbs/pickle.png", fallback: "assets/ingredients-red/thumbs/pickled-onion.png", tags: ["pickle", "acid", "fresh"], note: "酸黄瓜让这一口更醒。" },
+  { id: "mushroom", name: "茶树菇", image: "assets/ingredients-red/thumbs/mushroom.png", fallback: "assets/ingredients-red/thumbs/braised-beef.png", tags: ["mushroom", "umami"], note: "茶树菇把鲜味铺开。" },
+  { id: "stracciatella-real", name: "斯塔塞特拉奶酪", image: "assets/ingredients-red/thumbs/stracciatella-real.png", fallback: "assets/ingredients-clean/cheese/stracciatella.png", tags: ["cheese", "soft", "creamy"], note: "奶酪先把香气托住。" },
+  { id: "cheese-sauce", name: "奶酪酱", image: "assets/ingredients-red/thumbs/cheese-sauce.png", fallback: "assets/ingredients-red/thumbs/stracciatella-real.png", tags: ["cheese", "sauce", "creamy"], note: "奶酪酱让这一口更柔软。" },
+  { id: "creamy-cheese-sauce", name: "奶香芝士酱", image: "assets/ingredients-red/thumbs/creamy-cheese-sauce.png", fallback: "assets/ingredients-red/thumbs/cheese-sauce.png", tags: ["cheese", "sauce", "creamy"], note: "奶香又厚了一点。" },
+  { id: "cheese-slice", name: "芝士片", image: "assets/ingredients-red/thumbs/cheese-slice.png", fallback: "assets/ingredients-red/thumbs/mozzarella-slice.png", tags: ["cheese", "slice"], note: "芝士片稳稳盖上去。" },
+  { id: "mozzarella-slice", name: "马苏里拉芝士片", image: "assets/ingredients-red/thumbs/mozzarella-slice.png", fallback: "assets/ingredients-red/thumbs/cheese-slice.png", tags: ["cheese", "mozzarella"], note: "马苏里拉让口感更圆。" },
+  { id: "pesto-real", name: "青酱", image: "assets/ingredients-red/thumbs/pesto-real.png", fallback: "assets/ingredients-clean/sauce/pesto.png", tags: ["pesto", "sauce", "green"], note: "青酱这一层很加分。" },
+  { id: "cilantro-sauce", name: "香菜酱", image: "assets/ingredients-red/thumbs/cilantro-sauce.png", fallback: "assets/ingredients-red/thumbs/pesto-real.png", tags: ["sauce", "green", "herb"], note: "香菜酱把绿色香气打开。" },
+  { id: "vodka-sauce", name: "无酒精伏特加酱", image: "assets/ingredients-red/thumbs/vodka-sauce.png", fallback: "assets/ingredients-red/thumbs/cheese-sauce.png", tags: ["sauce", "creamy", "tomato"], note: "伏特加酱让味道更饱满。" },
+  { id: "balsamic-real", name: "黑醋汁", image: "assets/ingredients-red/thumbs/balsamic-real.png", fallback: "assets/ingredients-clean/sauce/balsamic.png", tags: ["balsamic", "sauce", "acid"], note: "黑醋把这一口收完整。" },
+  { id: "focaccia-toasted", name: "佛卡夏面包片", image: "assets/ingredients-red/thumbs/focaccia-toasted.png", fallback: "assets/ingredients/thumbs/focaccia.webp", tags: ["bread", "focaccia"], note: "又垫一层佛卡夏，香气更稳。" },
+  { id: "focaccia-open", name: "切开佛卡夏", image: "assets/ingredients-red/thumbs/focaccia-open.png", fallback: "assets/ingredients/thumbs/focaccia.webp", tags: ["bread", "focaccia"], note: "面包香气先站出来。" },
+  { id: "red-extra", name: "小红帽加料", image: "assets/ingredients-red/thumbs/red-extra.png", fallback: "assets/ingredients-red/thumbs/south-african-pepper.png", tags: ["special", "red"], note: "这一层有点小红帽。" },
 ];
-
 
 const liveMenuData = {
   sandwiches: [
@@ -130,6 +143,21 @@ const officialProfiles = [
   }
 ];
 
+const supplementalProfileWeights = {
+  "little-red": { "braised-beef": 1.25, "stracciatella-real": 1, "pesto-real": 1.2, "arugula-real": 1, "balsamic-real": 1.2, "south-african-pepper": 0.9, "red-extra": 0.9 },
+  "wolf-grandma": { "braised-beef": 1.2, "mortadella": 1.05, "stracciatella-real": 1.1, "cheese-sauce": 1, "arugula-real": 1.05, "mozzarella-slice": 0.9, "vodka-sauce": 0.85 },
+  "hunter": { "braised-beef": 1.7, "mushroom": 1.25, "balsamic-real": 1.1, "cheese-slice": 0.8, "mozzarella-slice": 0.75, "mortadella": 1.2 },
+  "ferdinand": { "braised-beef": 1.55, "pesto-real": 1.15, "cheese-sauce": 0.95, "mozzarella-slice": 1.15, "mushroom": 0.75 },
+  "chief": { "south-african-pepper": 1.15, "strawberry-tomato": 1, "stracciatella-real": 1.05, "braised-beef": 1.15, "pickled-onion": 0.9 },
+  "pasture": { "pesto-real": 1.25, "arugula-real": 1.45, "kale": 1.25, "south-african-pepper": 1.15, "strawberry-tomato": 1.1, "pickle": 0.85, "balsamic-real": 1.05 },
+  "pistachio": { "stracciatella-real": 1.45, "cheese-sauce": 1.2, "creamy-cheese-sauce": 1.35, "cheese-slice": 1, "mozzarella-slice": 1.15, "pesto-real": 0.55 }
+};
+
+function getIngredientWeight(profile, ingredient) {
+  const base = getIngredientWeight(profile, ingredient);
+  const extra = supplementalProfileWeights[profile.id] || {};
+  return base + (extra[ingredient.id] || 0);
+}
 let selectedIngredients = [];
 let ingredientCounts = {};
 let lastResultScores = [];
@@ -175,21 +203,41 @@ function updateIngredientCountBadge(button, count) {
 }
 const layerLayouts = {
   stracciatella: { left: 11, top: 43, width: 38, height: 27, z: 5, rotate: -4, scale: 1.02 },
+  "stracciatella-real": { left: 11, top: 43, width: 38, height: 27, z: 5, rotate: -4, scale: 1.02 },
+  "cheese-sauce": { left: 15, top: 43, width: 42, height: 28, z: 5, rotate: -3, scale: 1.02 },
+  "creamy-cheese-sauce": { left: 38, top: 43, width: 42, height: 28, z: 5, rotate: 4, scale: 1.02 },
   pesto: { left: 48, top: 42, width: 38, height: 27, z: 5, rotate: 5, scale: 1.02 },
+  "pesto-real": { left: 48, top: 42, width: 38, height: 27, z: 5, rotate: 5, scale: 1.02 },
+  "cilantro-sauce": { left: 45, top: 39, width: 40, height: 28, z: 6, rotate: 6, scale: 1 },
+  "vodka-sauce": { left: 29, top: 42, width: 45, height: 29, z: 6, rotate: 2, scale: 1.02 },
   pepper: { left: 23, top: 34, width: 38, height: 28, z: 8, rotate: -8, scale: 0.96 },
+  "south-african-pepper": { left: 22, top: 34, width: 40, height: 30, z: 8, rotate: -8, scale: 0.98 },
+  "strawberry-tomato": { left: 42, top: 33, width: 36, height: 28, z: 8, rotate: 7, scale: 0.94 },
   beef: { left: 18, top: 27, width: 54, height: 39, z: 10, rotate: 2, scale: 1.06 },
+  "braised-beef": { left: 17, top: 27, width: 56, height: 40, z: 10, rotate: 2, scale: 1.08 },
+  "mortadella": { left: 23, top: 29, width: 50, height: 36, z: 10, rotate: -3, scale: 1.02 },
   arugula: { left: 33, top: 25, width: 48, height: 38, z: 11, rotate: 8, scale: 0.98 },
+  "arugula-real": { left: 33, top: 25, width: 48, height: 38, z: 11, rotate: 8, scale: 0.98 },
+  kale: { left: 26, top: 23, width: 52, height: 40, z: 11, rotate: -6, scale: 0.98 },
+  "pickled-onion": { left: 30, top: 31, width: 40, height: 30, z: 12, rotate: -10, scale: 0.9 },
+  pickle: { left: 38, top: 31, width: 42, height: 30, z: 12, rotate: 9, scale: 0.92 },
+  mushroom: { left: 24, top: 28, width: 50, height: 36, z: 10, rotate: -2, scale: 1 },
   parmesan: { left: 25, top: 17, width: 54, height: 42, z: 13, rotate: -3, scale: 0.92 },
+  "cheese-slice": { left: 24, top: 30, width: 50, height: 34, z: 12, rotate: -4, scale: 0.96 },
+  "mozzarella-slice": { left: 27, top: 28, width: 48, height: 34, z: 12, rotate: 5, scale: 0.96 },
   balsamic: { left: 22, top: 37, width: 58, height: 29, z: 14, rotate: -6, scale: 1 },
+  "balsamic-real": { left: 22, top: 37, width: 58, height: 29, z: 14, rotate: -6, scale: 1 },
+  "focaccia-toasted": { left: 20, top: 30, width: 58, height: 38, z: 7, rotate: 1, scale: 1.02 },
+  "focaccia-open": { left: 20, top: 31, width: 58, height: 38, z: 7, rotate: -2, scale: 1 },
+  "red-extra": { left: 28, top: 30, width: 45, height: 34, z: 13, rotate: 7, scale: 0.96 }
 };
-
 function randomBetween(min, max) {
   return min + Math.random() * (max - min);
 }
 
 function getLayerMotion(step, layerIndex) {
   const layout = layerLayouts[step.id] || { left: 24, top: 32, width: 52, height: 34, z: 7, rotate: 0, scale: 1 };
-  const spread = step.id === "pepper" || step.id === "parmesan" ? 9 : 5;
+  const spread = step.tags.includes("pepper") || step.id === "parmesan" || step.id === "south-african-pepper" ? 9 : 5;
   const layerLift = Math.min(layerIndex * 2.2, 12);
   return {
     layout,
@@ -389,6 +437,7 @@ function renderIngredientOrbit() {
     const button = document.createElement("button");
     button.type = "button";
     button.className = `process-ingredient pos-${index}`;
+    button.style.setProperty("--tilt", `${randomBetween(-4, 4).toFixed(2)}deg`);
     button.dataset.id = step.id;
     button.innerHTML = `<img src="${step.image}" alt="${step.name}" loading="eager" onerror="this.onerror=null; this.src='${step.fallback}';" /><span>${step.name}</span>`;
     button.addEventListener("click", () => addIngredient(button, step));
@@ -507,11 +556,11 @@ function addProcessLayer(step, layerIndex, motion = getLayerMotion(step, layerIn
   layer.style.setProperty("--layer-start-rotate", `${motion.startRotate}deg`);
   layer.style.setProperty("--layer-scale", motion.scale.toFixed(3));
   layer.style.setProperty("--layer-pop-scale", (motion.scale * 1.035).toFixed(3));
-  if (step.id === "stracciatella") {
+  if (["stracciatella", "stracciatella-real", "cheese-sauce", "creamy-cheese-sauce", "vodka-sauce"].includes(step.id)) {
     layer.innerHTML = `<span class="smear smear-cheese"></span>`;
-  } else if (step.id === "pesto") {
+  } else if (["pesto", "pesto-real", "cilantro-sauce"].includes(step.id)) {
     layer.innerHTML = `<span class="smear smear-pesto"></span>`;
-  } else if (step.id === "balsamic") {
+  } else if (["balsamic", "balsamic-real"].includes(step.id)) {
     layer.innerHTML = `<span class="drizzle"></span><span class="drip d1"></span><span class="drip d2"></span>`;
   } else if (step.id === "parmesan") {
     layer.innerHTML = `<span class="flake f1"></span><span class="flake f2"></span><span class="flake f3"></span><span class="flake f4"></span><img src="${step.image}" alt="${step.name}" onerror="this.onerror=null; this.src='${step.fallback}';" />`;
@@ -585,7 +634,7 @@ function resetMaking(scrollToApp = true) {
 
 function scoreProfiles() {
   const rawScores = officialProfiles.map((profile) => {
-    const raw = selectedIngredients.reduce((sum, ingredient) => sum + (profile.weights[ingredient.id] || 0), 0);
+    const raw = selectedIngredients.reduce((sum, ingredient) => sum + (getIngredientWeight(profile, ingredient)), 0);
     return { ...profile, raw };
   }).sort((a, b) => b.raw - a.raw);
   const topThree = rawScores.slice(0, 3);
