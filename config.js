@@ -12,15 +12,14 @@ window.FULI_CONFIG = {
     gamePublicUrl: "https://echolyu6-cmd.github.io/fuli-little-red/"
   },
   conversion: {
-    singleDealLabel: "工作日单人餐｜狼外婆＋美式 ¥67",
-    singleDealNote: "周一至周五可核销",
-    doubleDealLabel: "工作日双人下午｜三明治＋2杯饮品 ¥110",
-    doubleDealNote: "7款三明治任选1款，饮品任选2杯",
-    weekdayVisitLabel: "周末来福里｜查看菜单与导航",
-    weekendVisitLabel: "今天来福里｜查看菜单与导航",
-    weekendDealLabel: "先囤工作日套餐",
-    singleDealFallbackCopy: "打开抖音、美团或大众点评，搜索「福里农舍」即可查看狼外婆三明治＋美式工作日团购。",
-    doubleDealFallbackCopy: "打开抖音、美团或大众点评，搜索「福里农舍」即可查看工作日双人下午套餐。"
+    singleDealLabel: "查看工作日单人团购",
+    singleDealNote: "狼外婆＋美式｜工作日可用",
+    doubleDealLabel: "查看工作日双人团购",
+    doubleDealNote: "三明治 1 份＋饮品 2 杯｜工作日可用",
+    weekdayVisitLabel: "菜单与导航",
+    weekendVisitLabel: "今天来福里｜菜单与导航",
+    singleDealFallbackCopy: "去抖音、美团或大众点评搜索「福里农舍」，查看工作日单人团购。",
+    doubleDealFallbackCopy: "去抖音、美团或大众点评搜索「福里农舍」，查看工作日双人团购。"
   },
   analytics: {
     debug: ["localhost", "127.0.0.1"].includes(location.hostname),
