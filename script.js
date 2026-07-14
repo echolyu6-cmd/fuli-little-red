@@ -154,7 +154,7 @@ const supplementalProfileWeights = {
 };
 
 function getIngredientWeight(profile, ingredient) {
-  const base = getIngredientWeight(profile, ingredient);
+  const base = profile.weights[ingredient.id] || 0;
   const extra = supplementalProfileWeights[profile.id] || {};
   return base + (extra[ingredient.id] || 0);
 }
