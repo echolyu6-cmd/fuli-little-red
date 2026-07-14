@@ -19,8 +19,8 @@ window.FULI_CONFIG = {
     weekdayVisitLabel: "周末来福里｜查看菜单与导航",
     weekendVisitLabel: "今天来福里｜查看菜单与导航",
     weekendDealLabel: "先囤工作日套餐",
-    dealFallbackTitle: "工作日团购",
-    dealFallbackCopy: "打开抖音、美团或大众点评，搜索「福里农舍」即可查看团购。"
+    singleDealFallbackCopy: "打开抖音、美团或大众点评，搜索「福里农舍」即可查看狼外婆三明治＋美式工作日团购。",
+    doubleDealFallbackCopy: "打开抖音、美团或大众点评，搜索「福里农舍」即可查看工作日双人下午套餐。"
   },
   analytics: {
     debug: ["localhost", "127.0.0.1"].includes(location.hostname),

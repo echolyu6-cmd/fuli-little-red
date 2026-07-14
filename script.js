@@ -866,15 +866,17 @@ function openDeal(type) {
   trackEvent(eventName, { link_configured: Boolean(url), day_type: isWeekend() ? "weekend" : "weekday" });
   if (openExternalUrl(url, isSingle ? "single_deal" : "double_deal")) return;
   openExternalSheet({
-    title: conversionConfig.dealFallbackTitle || "工作日团购",
-    copy: conversionConfig.dealFallbackCopy || "打开抖音搜索「福里农舍」，可以查看当前团购。",
+    title: isSingle ? "工作日单人团购" : "工作日双人团购",
+    copy: isSingle
+      ? (conversionConfig.singleDealFallbackCopy || "打开抖音、美团或大众点评，搜索「福里农舍」即可查看狼外婆三明治＋美式工作日团购。")
+      : (conversionConfig.doubleDealFallbackCopy || "打开抖音、美团或大众点评，搜索「福里农舍」即可查看工作日双人下午套餐。"),
     actions: [{ id: "copy-deal-store", label: "复制店铺名" }],
     brand: "FULI WEEKDAY DEAL"
   });
 }
 
 function openVisitOptions() {
-  trackEvent("navigation_click", { source: "result_visit" });
+  trackEvent("visit_options_open", { source: "result_visit" });
   const hasStore = Boolean(externalLinks.storeUrl);
   const hasNavigation = Boolean(externalLinks.navigationUrl);
   if (!hasStore && !hasNavigation) {
