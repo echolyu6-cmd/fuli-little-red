@@ -75,6 +75,13 @@ const ingredientPool = [
   { id: "red-extra", name: "小红帽加料", image: "assets/ingredients-red/thumbs/red-extra.png", fallback: "assets/ingredients-red/thumbs/south-african-pepper.png", tags: ["special", "red"], note: "这一层有点小红帽。" },
 ];
 
+function optimizedIngredientImage(step) {
+  return step.image.replace(
+    /^assets\/ingredients-red\/thumbs\/(.+)\.png$/,
+    "assets/ingredients-red/thumbs/$1.webp"
+  );
+}
+
 const liveMenuData = {
   sandwiches: [
     { id: "little-red", name: "小红帽", desc: "青酱、牛肉、芝麻菜和黑醋，招牌香气完整。", core: "青酱 / 牛肉 / 芝麻菜 / 黑醋", label: "招牌香气", price: "¥68 / 份", available: true },
@@ -519,12 +526,13 @@ function renderMenuCards() {
 function renderIngredientOrbit() {
   ingredientOrbit.innerHTML = "";
   ingredientPool.forEach((step, index) => {
+    const optimizedImage = optimizedIngredientImage(step);
     const button = document.createElement("button");
     button.type = "button";
     button.className = `process-ingredient pos-${index}`;
     button.style.setProperty("--tilt", `${randomBetween(-4, 4).toFixed(2)}deg`);
     button.dataset.id = step.id;
-    button.innerHTML = `<img src="${step.image}" alt="${step.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${step.fallback}';" /><span>${step.name}</span>`;
+    button.innerHTML = `<img src="${optimizedImage}" alt="${step.name}" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='${step.fallback}';" /><span>${step.name}</span>`;
     button.addEventListener("click", () => addIngredient(button, step));
     ingredientOrbit.appendChild(button);
   });
@@ -596,6 +604,7 @@ function pulse(button) {
 }
 
 function flyToPlate(button, step, motion, done) {
+  const optimizedImage = optimizedIngredientImage(step);
   const from = button.getBoundingClientRect();
   const to = plateZone.getBoundingClientRect();
   const targetX = to.left + to.width * 0.5 + motion.x;
@@ -604,7 +613,7 @@ function flyToPlate(button, step, motion, done) {
   const startY = from.top + from.height / 2;
   const fly = document.createElement("div");
   fly.className = "fly-piece";
-  fly.innerHTML = `<img src="${step.image}" alt="${step.name}" onerror="this.onerror=null; this.src='${step.fallback}';" />`;
+  fly.innerHTML = `<img src="${optimizedImage}" alt="${step.name}" onerror="this.onerror=null; this.src='${step.fallback}';" />`;
   fly.style.left = `${from.left}px`;
   fly.style.top = `${from.top}px`;
   fly.style.width = `${from.width}px`;
@@ -631,6 +640,7 @@ function flyToPlate(button, step, motion, done) {
 }
 
 function addProcessLayer(step, layerIndex, motion = getLayerMotion(step, layerIndex)) {
+  const optimizedImage = optimizedIngredientImage(step);
   const layer = document.createElement("div");
   const { layout } = motion;
   layer.className = `process-layer layer-${step.id}`;
@@ -652,9 +662,9 @@ function addProcessLayer(step, layerIndex, motion = getLayerMotion(step, layerIn
   } else if (["balsamic", "balsamic-real"].includes(step.id)) {
     layer.innerHTML = `<span class="drizzle"></span><span class="drip d1"></span><span class="drip d2"></span>`;
   } else if (step.id === "parmesan") {
-    layer.innerHTML = `<span class="flake f1"></span><span class="flake f2"></span><span class="flake f3"></span><span class="flake f4"></span><img src="${step.image}" alt="${step.name}" onerror="this.onerror=null; this.src='${step.fallback}';" />`;
+    layer.innerHTML = `<span class="flake f1"></span><span class="flake f2"></span><span class="flake f3"></span><span class="flake f4"></span><img src="${optimizedImage}" alt="${step.name}" onerror="this.onerror=null; this.src='${step.fallback}';" />`;
   } else {
-    layer.innerHTML = `<img src="${step.image}" alt="${step.name}" onerror="this.onerror=null; this.src='${step.fallback}';" />`;
+    layer.innerHTML = `<img src="${optimizedImage}" alt="${step.name}" onerror="this.onerror=null; this.src='${step.fallback}';" />`;
   }
   processLayers.appendChild(layer);
   productionStage.classList.remove("is-stacking");
@@ -764,9 +774,11 @@ function renderResult() {
   lastResultScores = scores;
   lastHiddenResult = hidden;
   const top = scores[0];
-  const visualImage = hidden ? "assets/products/fuli-platter/fuli-platter.png" : top.image;
+  const visualImage = hidden
+    ? "assets/products/fuli-platter/fuli-platter-medium.webp"
+    : `assets/sandwiches/medium/${top.id}.webp`;
   const visualAlt = hidden ? "福气满满拼盘" : top.name;
-  resultVisual.innerHTML = `<img src="${visualImage}" alt="${visualAlt}" onerror="this.onerror=null; this.src='assets/sandwiches/little-red.jpg';" />`;
+  resultVisual.innerHTML = `<img src="${visualImage}" alt="${visualAlt}" decoding="async" onerror="this.onerror=null; this.src='assets/sandwiches/thumbs/little-red.webp';" />`;
   resultBg.src = visualImage;
   resultKicker.textContent = hidden ? "当你的搭配太有内容，可能会召唤隐藏结果。" : "你随手搭出了一份今日口味。";
   if (hidden) {
