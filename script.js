@@ -276,7 +276,8 @@ function getLayerMotion(step, layerIndex) {
     y: randomBetween(-4, 5) - layerLift,
     rotate: layout.rotate + randomBetween(-4, 4),
     startRotate: layout.rotate + randomBetween(-10, 10),
-    scale: layout.scale + randomBetween(-0.035, 0.035),
+    // The ingredient cut-outs need to read as a generous filling, not tiny icons.
+    scale: layout.scale * 1.45 + randomBetween(-0.035, 0.035),
   };
 }
 

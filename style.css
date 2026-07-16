@@ -815,6 +815,41 @@ p { font-size: 16px; line-height: 1.58; }
   }
   .recommend-item img { min-height: 98px; }
 }
+
+/* Keep the finished sandwich generous enough for the plate, with the top bread
+   clearly sitting above the fillings during the closing beat. */
+.open-sandwich.is-closing,
+.open-sandwich.is-closed,
+.open-sandwich.is-quartered {
+  transform: scale(1.22);
+}
+.open-sandwich.is-closed .bread-slice,
+.open-sandwich.is-quartered .bread-slice {
+  top: -30%;
+  left: 10%;
+  right: auto;
+  width: 80%;
+  height: auto;
+  aspect-ratio: 1;
+}
+.open-sandwich.is-closed .slice-left,
+.open-sandwich.is-quartered .slice-left {
+  z-index: 3;
+  transform: translateY(16px) rotate(-0.6deg);
+}
+.open-sandwich.is-closed .slice-right,
+.open-sandwich.is-quartered .slice-right {
+  z-index: 40;
+  transform: translateY(-12px) rotate(1deg);
+}
+.open-sandwich.is-closed .cut-knife,
+.open-sandwich.is-quartered .cut-knife {
+  z-index: 45;
+}
+.open-sandwich.is-closed .cut-line,
+.open-sandwich.is-quartered .cut-line {
+  z-index: 44;
+}
 /* Result conversion bottom sheet. */
 .order-sheet {
   position: fixed;
