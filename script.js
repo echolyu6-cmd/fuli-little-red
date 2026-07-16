@@ -262,12 +262,23 @@ const layerLayouts = {
   "focaccia-open": { left: 20, top: 31, width: 58, height: 38, z: 7, rotate: -2, scale: 1 },
   "red-extra": { left: 28, top: 30, width: 45, height: 34, z: 13, rotate: 7, scale: 0.96 }
 };
+
+const stackPlacements = [
+  { left: 2, top: 26, width: 52, height: 72 },
+  { left: 46, top: 24, width: 52, height: 74 },
+  { left: 16, top: 9, width: 68, height: 80 },
+  { left: 0, top: 35, width: 58, height: 68 },
+  { left: 42, top: 33, width: 58, height: 70 }
+];
 function randomBetween(min, max) {
   return min + Math.random() * (max - min);
 }
 
 function getLayerMotion(step, layerIndex) {
-  const layout = layerLayouts[step.id] || { left: 24, top: 32, width: 52, height: 34, z: 7, rotate: 0, scale: 1 };
+  const ingredientLayout = layerLayouts[step.id] || { left: 24, top: 32, width: 52, height: 34, z: 7, rotate: 0, scale: 1 };
+  // Five big placements make the fillings cover both focaccia halves instead of piling into the seam.
+  const placement = stackPlacements[(layerIndex - 1) % stackPlacements.length];
+  const layout = { ...ingredientLayout, ...placement };
   const spread = step.tags.includes("pepper") || step.id === "parmesan" || step.id === "south-african-pepper" ? 9 : 5;
   const layerLift = Math.min(layerIndex * 2.2, 12);
   return {
